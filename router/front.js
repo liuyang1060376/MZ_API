@@ -1,38 +1,15 @@
 const express = require('express')
 const Router = express.Router()
-const mysql = require('./../mysql')
-const md5 = require('md5-node');
-const sendCode = require('./../api/index')
-
-//获取验证码
-Router.get('/getCode',(req,res)=>{
-    let ACCOUNTSID='b52892e77808f80820927b7572661365'
-    let AUTHTOKEN='cb67ba384b7e4627b4ab1d4d31cb758f'
-    let timestamp=new Date().getTime();
-    let sig =md5(ACCOUNTSID+AUTHTOKEN+timestamp)
-    let mobile = req.query.mobile
-    sendCode.getCode(mobile,timestamp,ACCOUNTSID,sig).then(data=>{
-        console.log(data.data)
-        if(data.status===200){
-            res.json({
-                code:200,
-                data:'请求成功'
-            })
-        }else{
-            res.json({
-                code:406,
-                data:data.data
-            })
-        }
-    })
-})
+const sql= require('./../mysql')
+const client = require('./../api/memcached')
+const getData = require('./../api/functions')
 
 
 
 //获取首页轮播图
 Router.get('/getBanner',function (req, res) {
-    console.log('访问了')
-    mysql('select * from banner order by Id DESC').then(result=>{
+
+    sql('select * from banner order by Id DESC').then(result=>{
         res.json({
             code:200,
             data:result
@@ -40,13 +17,96 @@ Router.get('/getBanner',function (req, res) {
     }).catch(function (err) {
         res.json({
             code:500,
-            data:err
+            data:''
         })
     })
 })
 
-Router.get('api/getBanner',function (req, res) {
-    res.send('fdlaksfjka')
+//登录接口,mobile,1为验证码登录，2为用户账号密码登录
+Router.post('/login',function (req, res) {
+    //验证码登录
+    let type = req.body.type
+    if (type===1){
+        let mobile=req.body.mobile
+        let code = req.body.code
+        client.get(mobile,function (err,resp) {
+            //判断验证码是否正确
+            if(resp===code){
+                //查找用户是否存在，存在则直接登录，不存在则创建账户
+                sql("select * from frontusers where mobile="+mobile).then(result=>{
+                    if(result[0]){
+                        req.session.username=result[0].username
+                        res.json({
+                            code:200,
+                            data:'登录成功'
+                        })
+                    }else{
+                        let name = getData.RandomName()
+                        sql("insert into frontusers (username,mobile,password) values ('"+name+"','"+mobile+"','1060376291')").then(result=>{
+                                req.session.username=name
+                            res.json({
+                                    code:200,
+                                    data:'登录成功'
+                                })
+                            }
+
+                        ).catch(err=>{
+                            res.json({
+                                code:500,
+                                data:'服务器内部错误'
+                            })
+                        })
+                    }
+                }).catch(err=>{
+                    res.json({
+                        code:500,
+                        data:'服务器内部错误'
+                    })
+                })
+            }else{
+
+                res.json({
+                    code:422,
+                    data:'验证码错误'
+                })
+            }
+        })
+    }
+    else{
+    }
+})
+
+//判断用户是否登录
+Router.get('/isLogin',(req,res)=>{
+    var username = req.session.username
+
+    if(username){
+        sql("select * from frontusers where username='"+username+"'").then(result=>{
+            if(result[0]){
+                console.log('已登陆')
+                res.json({
+                    code:200,
+                    data:{username:result[0].username,mobile:result[0].mobile}
+                })
+            }else{
+                res.json({
+                    code:423,
+                    data:'用户未登录'
+                })
+            }
+        }).catch(err=>{
+            res.json({
+                code:'500',
+                data:'服务器内部错误'
+            })
+        })
+    }else{
+        res.json({
+            code:423,
+            data:'用户未登录'
+        })
+    }
+
 })
 
 
