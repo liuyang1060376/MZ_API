@@ -50,7 +50,7 @@ client.on("error", function (err) {
 // //
 // // 也可以不用设置过期时间
 // client.set('17775207122', '123456');
-//
+// //
 // client.get('17775207122', function(err, res) {
 //     console.log(err, res);
 // });
