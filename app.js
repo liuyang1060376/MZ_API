@@ -37,6 +37,6 @@ app.use('/common',common)
 
 
 
-app.listen(3000,'0.0.0.0',function () {
+app.listen(3000,'10.0.8.14',function () {
     console.log('执行成功')
 })

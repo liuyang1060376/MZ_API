@@ -109,7 +109,9 @@ Router.get('/isLogin',(req,res)=>{
 
 })
 
-
+Router.get('/',function(req,res){
+	res.send('zhixingchenggon')
+})
 
 
 
