@@ -6,6 +6,9 @@ const getData = require('./../api/functions')
 
 
 
+
+
+
 //获取首页轮播图
 Router.get('/getBanner',function (req, res) {
 
