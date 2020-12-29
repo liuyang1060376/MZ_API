@@ -3,6 +3,8 @@ const Router = express.Router()
 const sql= require('./../mysql')
 const client = require('./../api/memcached')
 const getData = require('./../api/functions')
+const multiparty = require('multiparty')
+const uploadFile=require('./../api/BDY')
 
 
 
@@ -112,8 +114,16 @@ Router.get('/isLogin',(req,res)=>{
 
 })
 
-Router.get('/',function(req,res){
-	res.send('zhixingchenggon')
+Router.post('/uploadImg',function(req,res){
+    console.log(req.body,"body")
+    //生成multiparty对象，并配置上传目标路径
+    var form = new multiparty.Form({ uploadDir: './public/images' });
+    form.parse(req, function(err, fields, files) {
+        console.log(files)
+        console.log('---------------')
+        console.log(fields)
+        uploadFile(files[0],files[0].path)
+    });
 })
 
 

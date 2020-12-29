@@ -27,7 +27,7 @@ let bucket = 'gdmztj'
 //     .then(function (response) {
 //         var contents = response.body.contents;
 //         for (var i = 0, l = contents.length; i < l; i++) {
-//         console.log(contents[i].key);
+//         console.log(contents[i]);
 //     }
 //     })
 //     .catch(function (error) {
@@ -57,5 +57,16 @@ let bucket = 'gdmztj'
 //            console.log(errors)
 //        }
 //     );
+// 以文件形式上传，仅支持Node.js环境
+function uploadFile(object,filepath) {
+    client.putObjectFromFile('gdmztj', object, filepath)
+        .then(result=>{
+            console.log(result)
+        })
+        .catch(err=>{
+            console.log(err)
+        });
 
+}
 
+module.exports=uploadFile
