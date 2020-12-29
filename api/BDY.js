@@ -22,18 +22,19 @@ let bucket = 'gdmztj'
 //         });
 // }
 
-// //查看bocket的对象名
-// client.listObjects('gdmztj')
-//     .then(function (response) {
-//         var contents = response.body.contents;
-//         for (var i = 0, l = contents.length; i < l; i++) {
-//         console.log(contents[i]);
-//     }
-//     })
-//     .catch(function (error) {
-//         console.log(error)
-//         console.log('查询失败')
-//     });
+//查看bocket的对象名
+client.listObjects('gdmztj')
+    .then(function (response) {
+        var contents = response.body.contents;
+        console.log(contents)
+        for (var i = 0, l = contents.length; i < l; i++) {
+        console.log(contents);
+    }
+    })
+    .catch(function (error) {
+        console.log(error)
+        console.log('查询失败')
+    });
 // //查看bucket列表
 // function getBucketList(){
 //     client.listBuckets()
@@ -61,12 +62,21 @@ let bucket = 'gdmztj'
 function uploadFile(object,filepath) {
     client.putObjectFromFile('gdmztj', object, filepath)
         .then(result=>{
-            console.log(result)
+
         })
         .catch(err=>{
-            console.log(err)
+            return '失败'
         });
+    var newfilename='https://gdmztj.su.bcebos.com/'+object
+    return newfilename
 
 }
+
+// function test(){
+//     return '3'
+// }
+//
+// let a=test()
+// console.log(a)
 
 module.exports=uploadFile

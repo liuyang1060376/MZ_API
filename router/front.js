@@ -4,9 +4,12 @@ const sql= require('./../mysql')
 const client = require('./../api/memcached')
 const getData = require('./../api/functions')
 const multiparty = require('multiparty')
+//百度云上传
 const uploadFile=require('./../api/BDY')
+//日期时间格式化
+const date = require("silly-datetime");
 
-
+const today = date.format(new Date(),'YYYY-MM-DD HH:mm:ss');
 
 
 
@@ -115,15 +118,22 @@ Router.get('/isLogin',(req,res)=>{
 })
 
 Router.post('/uploadImg',function(req,res){
-    console.log(req.body,"body")
     //生成multiparty对象，并配置上传目标路径
-    var form = new multiparty.Form({ uploadDir: './public/images' });
+    var form = new multiparty.Form();
     form.parse(req, function(err, fields, files) {
-        console.log(files)
-        console.log('---------------')
-        console.log(fields)
-        uploadFile(files[0],files[0].path)
+        Object.keys(files).forEach(value => {
+            let datetime= new Date().getTime()
+            let filename = datetime.toString()+'.png'
+            let filepath=uploadFile(filename,files[value][0].path)
+            console.log(filepath)
+                res.json({
+                    code:200,
+                    data:filepath
+                })
+        }
+        )
     });
+
 })
 
 

@@ -11,7 +11,7 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'content-type');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Content-Type','*')
+    res.setHeader('Content-Type','application/x-www-form-urlencoded')
     res.setHeader('Access-Control-Allow-Origin','application/x-www-form-urlencoded;charset=utf-8');
 
     next();
